@@ -1,61 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Storyteller</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Story Adventure</title>
   <style>
-    body { font-family: Arial; padding: 20px; background: #111; color: #eee; }
-    textarea, input, button { width: 100%; padding: 10px; margin-top: 10px; }
-    #storyLog { white-space: pre-line; margin-top: 20px; }
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #00ffcc;
+    }
+
+    p.description {
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #ccc;
+    }
+
+    iframe {
+      border: none;
+      width: 100%;
+      max-width: 1000px;
+      height: 700px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
+
   <h1>AI Story Adventure</h1>
-  <div id="storyLog">Loading story...</div>
-  <textarea id="userInput" placeholder="Type your next action..."></textarea>
-  <button onclick="sendReply()">Send</button>
+  <p class="description">Welcome! Start chatting below — your story begins the moment you speak. Let the AI guide your imagination.</p>
 
-  <script>
-    const storyLog = document.getElementById("storyLog");
-    const inputBox = document.getElementById("userInput");
-    let messages = [];
+  <!-- Free AI Bot via Hugging Face -->
+  <iframe src="https://huggingface.co/spaces/yuntian-deng/ChatGPT"></iframe>
 
-    async function getInitialStory() {
-      const prompt = "Generate a random story intro that puts the user in a mysterious or exciting situation. It should be immersive and under 60 words.";
-      const res = await callOpenAI(prompt);
-      const start = res;
-      messages.push({ role: "assistant", content: start });
-      storyLog.innerText = start;
-    }
+  <footer>
+    Powered by Hugging Face | This is a demo AI storyteller
+  </footer>
 
-    async function sendReply() {
-      const userInput = inputBox.value;
-      messages.push({ role: "user", content: userInput });
-      inputBox.value = "Thinking...";
-      const reply = await callOpenAI(null, messages);
-      messages.push({ role: "assistant", content: reply });
-      storyLog.innerText += "\n\nYou: " + userInput + "\nAI: " + reply;
-      inputBox.value = "";
-    }
-
-    async function callOpenAI(prompt, chatMessages = null) {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer YOUR_OPENAI_API_KEY"
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: chatMessages || [{ role: "user", content: prompt }],
-          temperature: 0.9
-        })
-      });
-
-      const data = await response.json();
-      return data.choices[0].message.content.trim();
-    }
-
-    getInitialStory();
-  </script>
 </body>
 </html>
