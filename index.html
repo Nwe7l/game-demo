@@ -2,55 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI StoryBot</title>
+  <title>Text AI Adventure</title>
   <style>
-    body { background: #111; color: #eee; font-family: monospace; padding: 20px; max-width: 700px; margin: auto; }
-    input, button { font-size: 16px; padding: 10px; margin-top: 10px; width: 100%; }
-    .chat { white-space: pre-line; margin-top: 20px; }
+    body {
+      background: black;
+      color: limegreen;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+    }
+    #output {
+      white-space: pre-wrap;
+      margin-bottom: 20px;
+    }
+    input {
+      background: black;
+      color: limegreen;
+      border: 1px solid limegreen;
+      padding: 10px;
+      width: 100%;
+      font-size: 18px;
+      font-family: 'Courier New', Courier, monospace;
+    }
   </style>
 </head>
 <body>
-  <h1>AI StoryBot</h1>
-  <div id="chat" class="chat">AI: Loading story...</div>
-  <input type="text" id="input" placeholder="Type your action..." />
-  <button onclick="sendMessage()">Send</button>
-
-  <script>
-    let messages = [
-      { role: "system", content: "You are a creative AI storyteller. Start a random story and continue it based on what the user types." }
-    ];
-
-    async function sendMessage() {
-      const input = document.getElementById("input").value;
-      if (!input) return;
-      messages.push({ role: "user", content: input });
-      document.getElementById("chat").innerText += `\nYou: ${input}\nAI: Thinking...`;
-      document.getElementById("input").value = "";
-
-      const res = await fetch("/.netlify/functions/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages })
-      });
-      const data = await res.json();
-      const reply = data.reply;
-      messages.push({ role: "assistant", content: reply });
-      document.getElementById("chat").innerText = messages.slice(1).map(m =>
-        m.role === "user" ? `You: ${m.content}` : `AI: ${m.content}`
-      ).join("\n\n");
-    }
-
-    // Load a random opener
-    (async () => {
-      const opener = await fetch("/.netlify/functions/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages })
-      });
-      const data = await opener.json();
-      messages.push({ role: "assistant", content: data.reply });
-      document.getElementById("chat").innerText = `AI: ${data.reply}`;
-    })();
-  </script>
+  <div id="output">YOU WAKE UP IN A FOREST.</div>
+  <input id="input" type="text" placeholder=">> Your move..." autocomplete="off" />
+  
+  <script src="script.js"></script>
 </body>
 </html>
