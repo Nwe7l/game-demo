@@ -2,45 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Story Adventure</title>
+  <title>AI StoryBot</title>
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #1a1a1a;
-      color: #fff;
-      text-align: center;
-      padding: 40px;
-    }
-
-    h1 {
-      color: #00ffcc;
-    }
-
-    p {
-      color: #ccc;
-      margin-bottom: 30px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    footer {
-      margin-top: 50px;
-      font-size: 12px;
-      color: #666;
-    }
+    body { background: #111; color: #eee; font-family: monospace; padding: 20px; max-width: 700px; margin: auto; }
+    input, button { font-size: 16px; padding: 10px; margin-top: 10px; width: 100%; }
+    .chat { white-space: pre-line; margin-top: 20px; }
   </style>
 </head>
 <body>
+  <h1>AI StoryBot</h1>
+  <div id="chat" class="chat">AI: Loading story...</div>
+  <input type="text" id="input" placeholder="Type your action..." />
+  <button onclick="sendMessage()">Send</button>
 
-  <h1>AI Story Adventure</h1>
-  <p>Welcome to your interactive story journey. A mysterious world awaits — start chatting using the AI in the bottom-right corner!</p>
+  <script>
+    let messages = [
+      { role: "system", content: "You're an AI storyteller. Start a creative, random story and continue it based on what the user says." }
+    ];
 
-  <footer>Powered by Tidio | Custom Story Chatbot</footer>
+    async function sendMessage() {
+      const input = document.getElementById("input").value;
+      if (!input) return;
+      messages.push({ role: "user", content: input });
+      document.getElementById("chat").innerText += `\nYou: ${input}\nAI: Thinking...`;
+      document.getElementById("input").value = "";
 
-  <!-- Your working Tidio AI bot -->
-  <script src="//code.tidio.co/uwch7cl1faiuvy0mh6qwh90ltl91yh2b.js" async></script>
+      const res = await fetch("/.netlify/functions/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages })
+      });
+      const data = await res.json();
+      const reply = data.reply;
+      messages.push({ role: "assistant", content: reply });
+      document.getElementById("chat").innerText = messages.slice(1).map(m =>
+        m.role === "user" ? `You: ${m.content}` : `AI: ${m.content}`
+      ).join("\n\n");
+    }
 
+    // Load a random opener
+    (async () => {
+      const opener = await fetch("/.netlify/functions/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages })
+      });
+      const data = await opener.json();
+      messages.push({ role: "assistant", content: data.reply });
+      document.getElementById("chat").innerText = `AI: ${data.reply}`;
+    })();
+  </script>
 </body>
 </html>
