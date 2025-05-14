@@ -1,41 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI Story Adventure</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Arial', sans-serif;
       background-color: #1a1a1a;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      text-align: center;
+      padding: 40px;
     }
 
     h1 {
-      margin-bottom: 10px;
       color: #00ffcc;
     }
 
-    p.description {
-      text-align: center;
-      max-width: 600px;
-      margin-bottom: 20px;
-      font-size: 16px;
+    p {
       color: #ccc;
+      margin-bottom: 30px;
     }
 
     iframe {
-      border: none;
       width: 100%;
-      max-width: 1000px;
-      height: 700px;
+      max-width: 800px;
+      height: 600px;
+      border: none;
       border-radius: 10px;
-      overflow: hidden;
     }
 
     footer {
@@ -48,14 +40,17 @@
 <body>
 
   <h1>AI Story Adventure</h1>
-  <p class="description">Welcome! Start chatting below — your story begins the moment you speak. Let the AI guide your imagination.</p>
+  <p>Start your journey with an AI-powered storyteller below. Type your actions and see where the story takes you.</p>
 
-  <!-- Free AI Bot via Hugging Face -->
-  <iframe src="https://huggingface.co/spaces/yuntian-deng/ChatGPT"></iframe>
+  <!-- Free AI Chatbot from Poe (no API key needed) -->
+  <iframe
+    src="https://poe.com/embed?handle=poe&bot=gpt-3-5-turbo"
+    width="100%"
+    height="600"
+    frameborder="0">
+  </iframe>
 
-  <footer>
-    Powered by Hugging Face | This is a demo AI storyteller
-  </footer>
+  <footer>Powered by Poe | Free AI storytelling chat</footer>
 
 </body>
 </html>
