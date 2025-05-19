@@ -27,17 +27,42 @@ function typeText(text, callback) {
   }, 30);
 }
 
+// OpenAI call
+async function getContinuation(prompt) {
+  const apiKey = "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";
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: "You are a storyteller continuing a neon cyberpunk story. Respond with 1-2 short sentences only." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.9
+    })
+  });
+
+  const data = await response.json();
+  const message = data.choices?.[0]?.message?.content || "[No response from AI]";
+  return message.trim();
+}
+
 // Handle user input
-userInput.addEventListener('keydown', (e) => {
+userInput.addEventListener('keydown', async (e) => {
   if (e.key === 'Enter' && userInput.value.trim() !== "") {
     const userLine = userInput.value.trim();
     currentStory += "\n" + userLine;
     storyText.textContent += "\n" + userLine + "\n";
     userInput.value = "";
 
-    // Placeholder for generated continuation (will be replaced by AI)
-    const continuation = "She looked around, unsure what to expect next...\n";
-    typeText(continuation);
+    const aiText = await getContinuation(currentStory);
+    typeText(aiText + "\n");
+    currentStory += "\n" + aiText;
   }
 });
 
