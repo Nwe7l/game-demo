@@ -1,72 +1,56 @@
-const storyText = document.getElementById('story-text');
-const userInput = document.getElementById('user-input');
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-const beginnings = [
-  "The city was asleep, but the green lights under the sewer flickered with life...",
-  "She woke up in a cold room, a glowing symbol pulsing on the ceiling...",
-  "Through the fog, a neon tower blinked silently, calling her name..."
-];
+// Character
+const character = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  size: 40,
+  color: 'lime',
+  speed: 5,
+};
 
-let currentStory = "";
+// Movement flags
+let keys = {
+  w: false,
+  a: false,
+  s: false,
+  d: false,
+};
 
-// Pick a random beginning
-function getRandomBeginning() {
-  return beginnings[Math.floor(Math.random() * beginnings.length)];
-}
-
-// Typing effect
-function typeText(text, callback) {
-  let index = 0;
-  const interval = setInterval(() => {
-    storyText.textContent += text[index];
-    index++;
-    if (index === text.length) {
-      clearInterval(interval);
-      if (callback) callback();
-    }
-  }, 30);
-}
-
-// OpenAI call
-async function getContinuation(prompt) {
-  const apiKey = "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";
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are a storyteller continuing a neon cyberpunk story. Respond with 1-2 short sentences only." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.9
-    })
-  });
-
-  const data = await response.json();
-  const message = data.choices?.[0]?.message?.content || "[No response from AI]";
-  return message.trim();
-}
-
-// Handle user input
-userInput.addEventListener('keydown', async (e) => {
-  if (e.key === 'Enter' && userInput.value.trim() !== "") {
-    const userLine = userInput.value.trim();
-    currentStory += "\n" + userLine;
-    storyText.textContent += "\n" + userLine + "\n";
-    userInput.value = "";
-
-    const aiText = await getContinuation(currentStory);
-    typeText(aiText + "\n");
-    currentStory += "\n" + aiText;
-  }
+// Handle keydown/keyup
+document.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
 });
 
-// Start with a random beginning
-const beginning = getRandomBeginning();
-currentStory = beginning;
-typeText(beginning);
+document.addEventListener('keyup', (e) => {
+  if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
+});
+
+// Game loop
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw ground/place
+  ctx.strokeStyle = 'lime';
+  ctx.lineWidth = 5;
+  ctx.strokeRect(100, 100, canvas.width - 200, canvas.height - 200);
+
+  // Move character
+  if (keys.w) character.y -= character.speed;
+  if (keys.s) character.y += character.speed;
+  if (keys.a) character.x -= character.speed;
+  if (keys.d) character.x += character.speed;
+
+  // Draw character
+  ctx.fillStyle = character.color;
+  ctx.beginPath();
+  ctx.arc(character.x, character.y, character.size, 0, Math.PI * 2);
+  ctx.fill();
+
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
