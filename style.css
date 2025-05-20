@@ -1,0 +1,19 @@
+
+body {
+  margin: 0;
+  background: black;
+  overflow: hidden;
+  font-family: monospace;
+}
+#gameCanvas {
+  display: block;
+  margin: 0 auto;
+  background: #111;
+  image-rendering: pixelated;
+}
+#message {
+  color: red;
+  text-align: center;
+  font-size: 20px;
+  margin-top: 10px;
+}
