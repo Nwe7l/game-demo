@@ -3,11 +3,144 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neon Girl Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Neon Horror Story</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      font-family: 'Courier New', monospace;
+      color: #39ff14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #story-container {
+      width: 80%;
+      max-width: 800px;
+    }
+    #story-text {
+      white-space: pre-wrap;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      min-height: 200px;
+    }
+    .option-button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #111;
+      color: #39ff14;
+      border: 1px solid #39ff14;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .option-button:hover {
+      background-color: #222;
+    }
+  </style>
 </head>
 <body>
-  <canvas id="gameCanvas"></canvas>
-  <script src="script.js"></script>
+  <div id="story-container">
+    <div id="story-text"></div>
+    <div id="options"></div>
+  </div>
+  <script>
+    const storyText = document.getElementById('story-text');
+    const optionsContainer = document.getElementById('options');
+
+    const storyData = {
+      start: {
+        text: "The air was cold and thick with mist. A distant scream echoed through the haunted asylum...",
+        options: [
+          { text: "Enter the asylum", next: "asylum" },
+          { text: "Walk around to the back entrance", next: "backEntrance" },
+          { text: "ادخل المبنى المسكون (Arabic)", next: "asylum_ar" }
+        ]
+      },
+      asylum: {
+        text: "Inside, the lights flickered. Bloodstained walls whispered forgotten names...",
+        options: [
+          { text: "Go up the creaking stairs", next: "stairs" },
+          { text: "Explore the basement", next: "basement" }
+        ]
+      },
+      backEntrance: {
+        text: "Behind the asylum, a hidden hatch led underground. Cold air rushed out...",
+        options: [
+          { text: "Climb into the hatch", next: "underground" },
+          { text: "Run back to the front", next: "asylum" }
+        ]
+      },
+      stairs: {
+        text: "Each step moaned. A shadow moved quickly at the top...",
+        options: [
+          { text: "Follow the shadow", next: "shadowRoom" },
+          { text: "Hide in a side room", next: "sideRoom" }
+        ]
+      },
+      basement: {
+        text: "The smell of rot filled the air. Chains rattled in the darkness...",
+        options: [
+          { text: "Call out", next: "voiceAnswer" },
+          { text: "Stay silent and listen", next: "listenDark" }
+        ]
+      },
+      underground: {
+        text: "The tunnel walls were covered with strange markings and claw marks...",
+        options: [
+          { text: "Touch the markings", next: "curse" },
+          { text: "Keep walking", next: "chamber" }
+        ]
+      },
+      shadowRoom: {
+        text: "The room was filled with broken dolls and mirrors. Your reflection blinked on its own...",
+        options: []
+      },
+      sideRoom: {
+        text: "Dusty medical tools lay everywhere. Something was breathing under the bed...",
+        options: []
+      },
+      voiceAnswer: {
+        text: "A low voice responded: 'We've been waiting for you.' Suddenly, chains lunged toward you...",
+        options: []
+      },
+      listenDark: {
+        text: "You heard whispers. They spoke your name. Something knew you were there...",
+        options: []
+      },
+      curse: {
+        text: "As you touched the markings, pain seared through your mind. A curse had begun...",
+        options: []
+      },
+      chamber: {
+        text: "You found a chamber lit by candles. At the center: a mirror that showed your death...",
+        options: []
+      },
+      asylum_ar: {
+        text: "عندما دخلت المبنى، كانت الأنوار تومض والهواء مليئًا بالهمسات الغامضة...",
+        options: [
+          { text: "توجه إلى الطابق العلوي", next: "stairs" },
+          { text: "انزل إلى القبو", next: "basement" }
+        ]
+      }
+    };
+
+    function showStory(nodeKey) {
+      const node = storyData[nodeKey];
+      storyText.textContent = node.text;
+      optionsContainer.innerHTML = '';
+
+      node.options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.textContent = option.text;
+        btn.className = 'option-button';
+        btn.onclick = () => showStory(option.next);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    showStory('start');
+  </script>
 </body>
 </html>
