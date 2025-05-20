@@ -29,7 +29,7 @@ function typeText(text, callback) {
 
 // OpenAI call
 async function getContinuation(prompt) {
-  const apiKey = "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";
+  const apiKey = "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";
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
