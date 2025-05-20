@@ -1,92 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Cyberpunk Story Generator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Story Game</title>
   <style>
     body {
-      font-family: monospace;
-      background: #0f0f0f;
-      color: #00ff99;
-      padding: 20px;
+      margin: 0;
+      background-color: #000;
+      font-family: 'Courier New', monospace;
+      color: #39ff14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #story-container {
+      width: 80%;
+      max-width: 800px;
     }
     #story-text {
       white-space: pre-wrap;
+      font-size: 1.2rem;
       margin-bottom: 20px;
+      min-height: 200px;
     }
-    #user-input {
-      width: 100%;
+    .option-button {
+      display: block;
+      margin: 10px 0;
       padding: 10px;
-      background: #111;
-      border: 1px solid #00ff99;
-      color: #00ff99;
+      background-color: #111;
+      color: #39ff14;
+      border: 1px solid #39ff14;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .option-button:hover {
+      background-color: #222;
     }
   </style>
 </head>
 <body>
-
-  <div id="story-text"></div>
-  <input id="user-input" type="text" placeholder="Continue the story and press Enter..." autocomplete="off" />
-
+  <div id="story-container">
+    <div id="story-text"></div>
+    <div id="options"></div>
+  </div>
   <script>
     const storyText = document.getElementById('story-text');
-    const userInput = document.getElementById('user-input');
+    const optionsContainer = document.getElementById('options');
 
-    const beginnings = [
-      "The city was asleep, but the green lights under the sewer flickered with life...",
-      "She woke up in a cold room, a glowing symbol pulsing on the ceiling...",
-      "Through the fog, a neon tower blinked silently, calling her name..."
-    ];
-
-    let currentStory = "";
-
-    function getRandomBeginning() {
-      return beginnings[Math.floor(Math.random() * beginnings.length)];
-    }
-
-    function typeText(text, callback) {
-      let index = 0;
-      const interval = setInterval(() => {
-        storyText.textContent += text[index];
-        index++;
-        if (index === text.length) {
-          clearInterval(interval);
-          if (callback) callback();
-        }
-      }, 30);
-    }
-
-    async function getContinuation(prompt) {
-      const response = await fetch("http://localhost:3000/continue-story", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt })
-      });
-
-      const data = await response.json();
-      return data.text;
-    }
-
-    userInput.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter' && userInput.value.trim() !== "") {
-        const userLine = userInput.value.trim();
-        currentStory += "\n" + userLine;
-        storyText.textContent += "\n" + userLine + "\n";
-        userInput.value = "";
-
-        const aiText = await getContinuation(currentStory);
-        typeText(aiText + "\n");
-        currentStory += "\n" + aiText;
+    const storyData = {
+      start: {
+        text: "She stood in the neon-lit alley, unsure where to go next...",
+        options: [
+          { text: "Explore the abandoned warehouse", next: "warehouse" },
+          { text: "Follow the flickering light down the tunnel", next: "tunnel" }
+        ]
+      },
+      warehouse: {
+        text: "Inside, broken machinery hummed faintly. Something was watching...",
+        options: [
+          { text: "Inspect the machines", next: "machines" },
+          { text: "Hide and observe", next: "hide" }
+        ]
+      },
+      tunnel: {
+        text: "The tunnel was tight and damp. A door glowed at the end...",
+        options: [
+          { text: "Open the door", next: "door" },
+          { text: "Turn back", next: "start" }
+        ]
+      },
+      machines: {
+        text: "The machines sparked. A voice echoed: 'Welcome back, Operative 09.'",
+        options: []
+      },
+      hide: {
+        text: "She crouched behind crates. Metal footsteps passed by, unaware...",
+        options: []
+      },
+      door: {
+        text: "Behind the door was a glowing console. A mission awaited...",
+        options: []
       }
-    });
+    };
 
-    // Start with a random beginning
-    const beginning = getRandomBeginning();
-    currentStory = beginning;
-    typeText(beginning);
+    function showStory(nodeKey) {
+      const node = storyData[nodeKey];
+      storyText.textContent = node.text;
+      optionsContainer.innerHTML = '';
+
+      node.options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.textContent = option.text;
+        btn.className = 'option-button';
+        btn.onclick = () => showStory(option.next);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    showStory('start');
   </script>
-
 </body>
 </html>
