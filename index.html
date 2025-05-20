@@ -1,16 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Neon Story</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Cyberpunk Story Generator</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #00ff99;
+      padding: 20px;
+    }
+    #story-text {
+      white-space: pre-wrap;
+      margin-bottom: 20px;
+    }
+    #user-input {
+      width: 100%;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #00ff99;
+      color: #00ff99;
+    }
+  </style>
 </head>
 <body>
-  <div id="story-container">
-    <div id="story-text"></div>
-    <input type="text" id="user-input" placeholder="Type your next move..." />
-  </div>
-  <script src="script.js"></script>
+
+  <div id="story-text"></div>
+  <input id="user-input" type="text" placeholder="Continue the story and press Enter..." autocomplete="off" />
+
+  <script>
+    const storyText = document.getElementById('story-text');
+    const userInput = document.getElementById('user-input');
+
+    const beginnings = [
+      "The city was asleep, but the green lights under the sewer flickered with life...",
+      "She woke up in a cold room, a glowing symbol pulsing on the ceiling...",
+      "Through the fog, a neon tower blinked silently, calling her name..."
+    ];
+
+    let currentStory = "";
+
+    function getRandomBeginning() {
+      return beginnings[Math.floor(Math.random() * beginnings.length)];
+    }
+
+    function typeText(text, callback) {
+      let index = 0;
+      const interval = setInterval(() => {
+        storyText.textContent += text[index];
+        index++;
+        if (index === text.length) {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, 30);
+    }
+
+    async function getContinuation(prompt) {
+      const response = await fetch("http://localhost:3000/continue-story", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await response.json();
+      return data.text;
+    }
+
+    userInput.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter' && userInput.value.trim() !== "") {
+        const userLine = userInput.value.trim();
+        currentStory += "\n" + userLine;
+        storyText.textContent += "\n" + userLine + "\n";
+        userInput.value = "";
+
+        const aiText = await getContinuation(currentStory);
+        typeText(aiText + "\n");
+        currentStory += "\n" + aiText;
+      }
+    });
+
+    // Start with a random beginning
+    const beginning = getRandomBeginning();
+    currentStory = beginning;
+    typeText(beginning);
+  </script>
+
 </body>
 </html>
