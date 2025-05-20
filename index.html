@@ -3,103 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neon Story Game</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: #000;
-      font-family: 'Courier New', monospace;
-      color: #39ff14;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    #story-container {
-      width: 80%;
-      max-width: 800px;
-    }
-    #story-text {
-      white-space: pre-wrap;
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      min-height: 200px;
-    }
-    .option-button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #111;
-      color: #39ff14;
-      border: 1px solid #39ff14;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    .option-button:hover {
-      background-color: #222;
-    }
-  </style>
+  <title>Neon Girl Game</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="story-container">
-    <div id="story-text"></div>
-    <div id="options"></div>
-  </div>
-  <script>
-    const storyText = document.getElementById('story-text');
-    const optionsContainer = document.getElementById('options');
-
-    const storyData = {
-      start: {
-        text: "She stood in the neon-lit alley, unsure where to go next...",
-        options: [
-          { text: "Explore the abandoned warehouse", next: "warehouse" },
-          { text: "Follow the flickering light down the tunnel", next: "tunnel" }
-        ]
-      },
-      warehouse: {
-        text: "Inside, broken machinery hummed faintly. Something was watching...",
-        options: [
-          { text: "Inspect the machines", next: "machines" },
-          { text: "Hide and observe", next: "hide" }
-        ]
-      },
-      tunnel: {
-        text: "The tunnel was tight and damp. A door glowed at the end...",
-        options: [
-          { text: "Open the door", next: "door" },
-          { text: "Turn back", next: "start" }
-        ]
-      },
-      machines: {
-        text: "The machines sparked. A voice echoed: 'Welcome back, Operative 09.'",
-        options: []
-      },
-      hide: {
-        text: "She crouched behind crates. Metal footsteps passed by, unaware...",
-        options: []
-      },
-      door: {
-        text: "Behind the door was a glowing console. A mission awaited...",
-        options: []
-      }
-    };
-
-    function showStory(nodeKey) {
-      const node = storyData[nodeKey];
-      storyText.textContent = node.text;
-      optionsContainer.innerHTML = '';
-
-      node.options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.textContent = option.text;
-        btn.className = 'option-button';
-        btn.onclick = () => showStory(option.next);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    showStory('start');
-  </script>
+  <canvas id="gameCanvas"></canvas>
+  <script src="script.js"></script>
 </body>
 </html>
