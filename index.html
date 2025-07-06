@@ -10,12 +10,10 @@
       margin: 0;
       padding: 20px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -23,28 +21,25 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       table-layout: fixed;
     }
-
     th, td {
       padding: 15px;
       text-align: center;
       border-bottom: 1px solid #e0e0e0;
       word-wrap: break-word;
     }
-
     th {
       background-color: #1f2937;
       color: white;
       position: sticky;
       top: 0;
     }
-
     .circle {
       height: 20px;
       width: 20px;
       border-radius: 50%;
       display: inline-block;
+      cursor: pointer;
     }
-
     .green { background-color: #10b981; }
     .red { background-color: #ef4444; }
     .orange { background-color: #f59e0b; }
@@ -57,17 +52,14 @@
       table, thead, tbody, th, td, tr {
         display: block;
       }
-
       th {
         position: static;
       }
-
       td {
         text-align: right;
         padding-left: 50%;
         position: relative;
       }
-
       td::before {
         position: absolute;
         left: 15px;
@@ -76,7 +68,6 @@
         font-weight: bold;
         color: #555;
       }
-
       td:nth-child(1)::before { content: "Region"; }
       td:nth-child(2)::before { content: "Socket"; }
       td:nth-child(3)::before { content: "Paints"; }
@@ -86,7 +77,6 @@
   </style>
 </head>
 <body>
-
   <h1>Oman Project Dashboard</h1>
 
   <table>
@@ -99,23 +89,71 @@
         <th>Screen Installation</th>
       </tr>
     </thead>
-    <tbody>
-      <tr><td>Muscat</td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td></tr>
-      <tr><td>Salalah</td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td></tr>
-      <tr><td>Sohar</td><td><span class="circle green"></span></td><td><span class="circle red"></span></td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td></tr>
-      <tr><td>Sur</td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle green"></span></td></tr>
-      <tr><td>Nizwa</td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td><td><span class="circle red"></span></td></tr>
-      <tr><td>Ibri</td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td></tr>
-      <tr><td>Barka</td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td></tr>
-      <tr><td>Buraimi</td><td><span class="circle orange"></span></td><td><span class="circle orange"></span></td><td><span class="circle red"></span></td><td><span class="circle green"></span></td></tr>
-      <tr><td>Duqm</td><td><span class="circle red"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle red"></span></td></tr>
-      <tr><td>Rustaq</td><td><span class="circle orange"></span></td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td></tr>
-      <tr><td>Bahla</td><td><span class="circle green"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td></tr>
-      <tr><td>Ibra</td><td><span class="circle red"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle red"></span></td></tr>
-      <tr><td>Khasab</td><td><span class="circle orange"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td></tr>
-      <tr><td>Samail</td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td></tr>
-    </tbody>
+    <tbody id="table-body"></tbody>
   </table>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB1G4tMYo3itPEgs-0BUyIVy9YCPfUvtM",
+      authDomain: "aaaaa-8c42c.firebaseapp.com",
+      projectId: "aaaaa-8c42c",
+      storageBucket: "aaaaa-8c42c.firebasestorage.app",
+      messagingSenderId: "584600827576",
+      appId: "1:584600827576:web:791410fdce936f756ca64d",
+      measurementId: "G-5GD659Y4Q8"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const tableBody = document.getElementById('table-body');
+    const fields = ["Socket", "Paints", "Software", "Screen"];
+    const statusColors = {
+      green: 'green',
+      orange: 'orange',
+      red: 'red'
+    };
+
+    function createRow(regionName, data) {
+      const tr = document.createElement('tr');
+      const tdRegion = document.createElement('td');
+      tdRegion.textContent = regionName;
+      tr.appendChild(tdRegion);
+
+      fields.forEach(field => {
+        const td = document.createElement('td');
+        const circle = document.createElement('span');
+        const value = data[field] || "red";
+        circle.className = `circle ${statusColors[value] || 'red'}`;
+
+        circle.onclick = () => {
+          const newStatus = prompt("Change status to: green, orange, or red", value);
+          if (newStatus && statusColors[newStatus]) {
+            db.collection('regions').doc(regionName).update({
+              [field]: newStatus
+            });
+          }
+        };
+
+        td.appendChild(circle);
+        tr.appendChild(td);
+      });
+
+      return tr;
+    }
+
+    db.collection("regions").onSnapshot(snapshot => {
+      tableBody.innerHTML = "";
+      snapshot.forEach(doc => {
+        tableBody.appendChild(createRow(doc.id, doc.data()));
+      });
+    });
+  </script>
 </body>
 </html>
