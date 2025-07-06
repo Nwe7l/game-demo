@@ -111,42 +111,8 @@
         <th>Screen Installation</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
-        <td>Muscat</td>
-        <td><span class="circle green" data-region="Muscat" data-task="Socket"></span></td>
-        <td><span class="circle green" data-region="Muscat" data-task="Paints"></span></td>
-        <td><span class="circle red" data-region="Muscat" data-task="Software Installation"></span></td>
-        <td><span class="circle orange" data-region="Muscat" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Salalah</td>
-        <td><span class="circle red" data-region="Salalah" data-task="Socket"></span></td>
-        <td><span class="circle orange" data-region="Salalah" data-task="Paints"></span></td>
-        <td><span class="circle green" data-region="Salalah" data-task="Software Installation"></span></td>
-        <td><span class="circle green" data-region="Salalah" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Sohar</td>
-        <td><span class="circle green" data-region="Sohar" data-task="Socket"></span></td>
-        <td><span class="circle red" data-region="Sohar" data-task="Paints"></span></td>
-        <td><span class="circle green" data-region="Sohar" data-task="Software Installation"></span></td>
-        <td><span class="circle orange" data-region="Sohar" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Sur</td>
-        <td><span class="circle red" data-region="Sur" data-task="Socket"></span></td>
-        <td><span class="circle red" data-region="Sur" data-task="Paints"></span></td>
-        <td><span class="circle red" data-region="Sur" data-task="Software Installation"></span></td>
-        <td><span class="circle green" data-region="Sur" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Nizwa</td>
-        <td><span class="circle orange" data-region="Nizwa" data-task="Socket"></span></td>
-        <td><span class="circle green" data-region="Nizwa" data-task="Paints"></span></td>
-        <td><span class="circle orange" data-region="Nizwa" data-task="Software Installation"></span></td>
-        <td><span class="circle red" data-region="Nizwa" data-task="Screen Installation"></span></td>
-      </tr>
+    <tbody id="dashboardBody">
+      <!-- سيتم تعبئة الصفوف بواسطة جافاسكريبت -->
     </tbody>
   </table>
 
@@ -160,8 +126,8 @@
   </div>
 
   <script>
-    // بيانات مدارس وهمية لكل محافظة ومهمة، مع 3 مدارس لكل مهمة (اسماء 1 و2 و3)
-    const data = {
+    // البيانات الافتراضية (لو ما موجودة في localStorage)
+    const defaultData = {
       Muscat: {
         "Socket": [
           { name: "School 1", status: "green" },
@@ -274,31 +240,75 @@
       }
     };
 
+    // محاولة استرجاع البيانات من localStorage
+    let data = JSON.parse(localStorage.getItem('omanDashboardData')) || defaultData;
+
     const modal = document.getElementById('modal');
     const schoolList = document.getElementById('schoolList');
     const modalTitle = document.getElementById('modalTitle');
     const closeModalBtn = document.getElementById('closeModal');
+    const dashboardBody = document.getElementById('dashboardBody');
 
     // تحديث الدائرة الرئيسية حسب حالة المدارس (الأولوية: red > orange > green)
-    function updateMainCircle(region, task) {
-      const schools = data[region][task];
-      let status = "green"; // أفضل حالة
+    function getOverallStatus(schools) {
+      let status = "green";
       for (const school of schools) {
         if (school.status === "red") {
-          status = "red";
-          break;
+          return "red";
         } else if (school.status === "orange") {
           status = "orange";
         }
       }
-      // تحديث الدائرة في الجدول
+      return status;
+    }
+
+    function updateMainCircle(region, task) {
+      const schools = data[region][task];
+      const status = getOverallStatus(schools);
       const circle = document.querySelector(`.circle[data-region="${region}"][data-task="${task}"]`);
       if (circle) {
         circle.className = "circle " + status;
       }
     }
 
-    // فتح المودال وعرض المدارس مع قائمة لتعديل الحالة
+    // بناء الجدول حسب البيانات الحالية
+    function buildTable() {
+      dashboardBody.innerHTML = "";
+      for (const region in data) {
+        const row = document.createElement('tr');
+
+        // اسم المحافظة
+        const tdRegion = document.createElement('td');
+        tdRegion.textContent = region;
+        row.appendChild(tdRegion);
+
+        // المهام
+        const tasks = ["Socket", "Paints", "Software Installation", "Screen Installation"];
+        for (const task of tasks) {
+          const td = document.createElement('td');
+          const status = getOverallStatus(data[region][task] || []);
+          const span = document.createElement('span');
+          span.className = `circle ${status}`;
+          span.setAttribute('data-region', region);
+          span.setAttribute('data-task', task);
+          td.appendChild(span);
+          row.appendChild(td);
+        }
+
+        dashboardBody.appendChild(row);
+      }
+
+      // ربط حدث النقر على الدوائر
+      document.querySelectorAll('.circle').forEach(circle => {
+        circle.addEventListener('click', e => {
+          const region = e.target.getAttribute('data-region');
+          const task = e.target.getAttribute('data-task');
+          openModal(region, task);
+        });
+      });
+    }
+
+    // فتح المودال مع إمكانية تعديل الحالة
     function openModal(region, task) {
       modal.style.display = "flex";
       modalTitle.textContent = `${region} - ${task} Schools`;
@@ -317,17 +327,23 @@
               <option value="red" ${school.status === "red" ? "selected" : ""}>Red</option>
             </select>
           `;
-          // عند تغيير الحالة يحدث التحديث
           div.querySelector('select').addEventListener('change', e => {
-            data[region][task][index].status = e.target.value;
-            div.querySelector('.circle').className = "circle " + e.target.value;
+            const newStatus = e.target.value;
+            data[region][task][index].status = newStatus;
+            div.querySelector('.circle').className = "circle " + newStatus;
             updateMainCircle(region, task);
+            saveData();
           });
           schoolList.appendChild(div);
         });
       } else {
         schoolList.textContent = "No schools data available.";
       }
+    }
+
+    // حفظ البيانات في localStorage
+    function saveData() {
+      localStorage.setItem('omanDashboardData', JSON.stringify(data));
     }
 
     closeModalBtn.onclick = () => {
@@ -340,14 +356,8 @@
       }
     };
 
-    // ربط الدوائر بالنقر
-    document.querySelectorAll('.circle').forEach(circle => {
-      circle.addEventListener('click', e => {
-        const region = e.target.getAttribute('data-region');
-        const task = e.target.getAttribute('data-task');
-        openModal(region, task);
-      });
-    });
+    // بناء الجدول عند تحميل الصفحة
+    buildTable();
   </script>
 
 </body>
