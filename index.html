@@ -2,79 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Oman Project Dashboard</title>
+  <title>Oman Dashboard (Live)</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      font-family: Arial;
       margin: 0;
       padding: 20px;
+      background: #f4f4f4;
     }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
     table {
       width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       table-layout: fixed;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 10px #ccc;
     }
-
     th, td {
       padding: 15px;
       text-align: center;
-      border-bottom: 1px solid #e0e0e0;
-      word-wrap: break-word;
-      cursor: pointer;
+      border: 1px solid #ddd;
     }
-
     th {
-      background-color: #1f2937;
+      background: #333;
       color: white;
     }
-
     .circle {
-      height: 20px;
       width: 20px;
+      height: 20px;
       border-radius: 50%;
       display: inline-block;
     }
+    .green { background: #10b981; }
+    .red { background: #ef4444; }
+    .orange { background: #f59e0b; }
 
-    .green { background-color: #10b981; }
-    .red { background-color: #ef4444; }
-    .orange { background-color: #f59e0b; }
-
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.5);
       justify-content: center;
       align-items: center;
     }
-
     .modal-content {
       background: white;
       padding: 20px;
-      border-radius: 10px;
       width: 400px;
+      border-radius: 10px;
       max-height: 80%;
       overflow-y: auto;
     }
-
     .school-item {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
+      margin: 8px 0;
     }
-
+    select {
+      padding: 4px;
+    }
     .close-btn {
       float: right;
       cursor: pointer;
@@ -84,9 +72,8 @@
 </head>
 <body>
 
-<h1>Oman Project Dashboard</h1>
-
-<table id="dashboard">
+<h2>Oman Project Dashboard (Live)</h2>
+<table>
   <thead>
     <tr>
       <th>Region</th>
@@ -94,17 +81,8 @@
       <th>Paints</th>
     </tr>
   </thead>
-  <tbody>
-    <tr data-region="Muscat">
-      <td>Muscat</td>
-      <td class="cell" data-task="Socket"><span class="circle red"></span></td>
-      <td class="cell" data-task="Paints"><span class="circle green"></span></td>
-    </tr>
-    <tr data-region="Salalah">
-      <td>Salalah</td>
-      <td class="cell" data-task="Socket"><span class="circle orange"></span></td>
-      <td class="cell" data-task="Paints"><span class="circle red"></span></td>
-    </tr>
+  <tbody id="dashboardBody">
+    <!-- Rows injected dynamically -->
   </tbody>
 </table>
 
@@ -118,71 +96,17 @@
 </div>
 
 <script>
-  // Example school data
-  const regionTaskData = {
-    Muscat: {
-      Socket: [
-        { name: "School A", status: "green" },
-        { name: "School B", status: "green" }
-      ],
-      Paints: [
-        { name: "School A", status: "green" },
-        { name: "School B", status: "green" }
-      ]
-    },
-    Salalah: {
-      Socket: [
-        { name: "School C", status: "orange" },
-        { name: "School D", status: "red" }
-      ],
-      Paints: [
-        { name: "School C", status: "red" },
-        { name: "School D", status: "red" }
-      ]
-    }
+  // 🔥 Replace with your Firebase config:
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
   };
 
-  // Handle cell click
-  document.querySelectorAll('.cell').forEach(cell => {
-    cell.addEventListener('click', () => {
-      const row = cell.parentElement;
-      const region = row.getAttribute('data-region');
-      const task = cell.getAttribute('data-task');
-      const schools = regionTaskData[region][task] || [];
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-      document.getElementById('modalTitle').textContent = `${region} - ${task}`;
-      const list = document.getElementById('schoolList');
-      list.innerHTML = '';
-
-      schools.forEach((school, i) => {
-        const div = document.createElement('div');
-        div.className = 'school-item';
-        div.innerHTML = `
-          <span>${school.name}</span>
-          <span class="circle ${school.status}"></span>
-        `;
-        list.appendChild(div);
-      });
-
-      document.getElementById('modal').style.display = 'flex';
-
-      // Update main cell circle color based on school statuses
-      const statuses = schools.map(s => s.status);
-      let finalStatus = 'red';
-      if (statuses.every(s => s === 'green')) {
-        finalStatus = 'green';
-      } else if (statuses.some(s => s === 'orange')) {
-        finalStatus = 'orange';
-      }
-
-      cell.querySelector('.circle').className = `circle ${finalStatus}`;
-    });
-  });
-
-  function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
-</script>
-
-</body>
-</html>
+  const tasks = ["Socket", "Paints]()
