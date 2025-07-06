@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Oman Project Dashboard</title>
   <style>
     body {
@@ -10,10 +10,12 @@
       margin: 0;
       padding: 20px;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 30px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -21,79 +23,65 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       table-layout: fixed;
     }
+
     th, td {
       padding: 15px;
       text-align: center;
       border-bottom: 1px solid #e0e0e0;
       word-wrap: break-word;
-      cursor: default;
     }
+
     th {
       background-color: #1f2937;
       color: white;
       position: sticky;
       top: 0;
     }
+
     .circle {
       height: 20px;
       width: 20px;
       border-radius: 50%;
       display: inline-block;
-      cursor: pointer;
     }
+
     .green { background-color: #10b981; }
     .red { background-color: #ef4444; }
     .orange { background-color: #f59e0b; }
+
     tbody tr:hover {
       background-color: #f0f0f0;
     }
-    /* Modal styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .modal-content {
-      background: white;
-      width: 450px;
-      max-height: 80vh;
-      overflow-y: auto;
-      border-radius: 8px;
-      padding: 20px;
-      box-sizing: border-box;
-      position: relative;
-    }
-    .modal h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 22px;
-      font-weight: bold;
-      color: #333;
-      cursor: pointer;
-    }
-    .school-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      justify-content: space-between;
-    }
-    .school-name {
-      font-weight: 600;
-    }
-    select.status-select {
-      padding: 4px 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      cursor: pointer;
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      th {
+        position: static;
+      }
+
+      td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+
+      td::before {
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: bold;
+        color: #555;
+      }
+
+      td:nth-child(1)::before { content: "Region"; }
+      td:nth-child(2)::before { content: "Socket"; }
+      td:nth-child(3)::before { content: "Paints"; }
+      td:nth-child(4)::before { content: "Software Install"; }
+      td:nth-child(5)::before { content: "Screen Install"; }
     }
   </style>
 </head>
@@ -112,243 +100,22 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Muscat</td>
-        <td><span class="circle green" data-region="Muscat" data-task="Socket"></span></td>
-        <td><span class="circle green" data-region="Muscat" data-task="Paints"></span></td>
-        <td><span class="circle red" data-region="Muscat" data-task="Software Installation"></span></td>
-        <td><span class="circle orange" data-region="Muscat" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Salalah</td>
-        <td><span class="circle red" data-region="Salalah" data-task="Socket"></span></td>
-        <td><span class="circle orange" data-region="Salalah" data-task="Paints"></span></td>
-        <td><span class="circle green" data-region="Salalah" data-task="Software Installation"></span></td>
-        <td><span class="circle green" data-region="Salalah" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Sohar</td>
-        <td><span class="circle green" data-region="Sohar" data-task="Socket"></span></td>
-        <td><span class="circle red" data-region="Sohar" data-task="Paints"></span></td>
-        <td><span class="circle green" data-region="Sohar" data-task="Software Installation"></span></td>
-        <td><span class="circle orange" data-region="Sohar" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Sur</td>
-        <td><span class="circle red" data-region="Sur" data-task="Socket"></span></td>
-        <td><span class="circle red" data-region="Sur" data-task="Paints"></span></td>
-        <td><span class="circle red" data-region="Sur" data-task="Software Installation"></span></td>
-        <td><span class="circle green" data-region="Sur" data-task="Screen Installation"></span></td>
-      </tr>
-      <tr>
-        <td>Nizwa</td>
-        <td><span class="circle orange" data-region="Nizwa" data-task="Socket"></span></td>
-        <td><span class="circle green" data-region="Nizwa" data-task="Paints"></span></td>
-        <td><span class="circle orange" data-region="Nizwa" data-task="Software Installation"></span></td>
-        <td><span class="circle red" data-region="Nizwa" data-task="Screen Installation"></span></td>
-      </tr>
+      <tr><td>Muscat</td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td></tr>
+      <tr><td>Salalah</td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td></tr>
+      <tr><td>Sohar</td><td><span class="circle green"></span></td><td><span class="circle red"></span></td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td></tr>
+      <tr><td>Sur</td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle green"></span></td></tr>
+      <tr><td>Nizwa</td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td><td><span class="circle red"></span></td></tr>
+      <tr><td>Ibri</td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td></tr>
+      <tr><td>Barka</td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td></tr>
+      <tr><td>Buraimi</td><td><span class="circle orange"></span></td><td><span class="circle orange"></span></td><td><span class="circle red"></span></td><td><span class="circle green"></span></td></tr>
+      <tr><td>Duqm</td><td><span class="circle red"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle red"></span></td></tr>
+      <tr><td>Rustaq</td><td><span class="circle orange"></span></td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td></tr>
+      <tr><td>Bahla</td><td><span class="circle green"></span></td><td><span class="circle red"></span></td><td><span class="circle red"></span></td><td><span class="circle orange"></span></td></tr>
+      <tr><td>Ibra</td><td><span class="circle red"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle red"></span></td></tr>
+      <tr><td>Khasab</td><td><span class="circle orange"></span></td><td><span class="circle orange"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td></tr>
+      <tr><td>Samail</td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle green"></span></td><td><span class="circle orange"></span></td></tr>
     </tbody>
   </table>
-
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="closeModal">&times;</span>
-      <h2 id="modalTitle">Schools</h2>
-      <div id="schoolList"></div>
-    </div>
-  </div>
-
-  <script>
-    // بيانات مدارس وهمية لكل محافظة ومهمة، مع 3 مدارس لكل مهمة (اسماء 1 و2 و3)
-    const data = {
-      Muscat: {
-        "Socket": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "red" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "green" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "green" }
-        ]
-      },
-      Salalah: {
-        "Socket": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "green" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "red" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "green" }
-        ]
-      },
-      Sohar: {
-        "Socket": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "red" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "green" }
-        ]
-      },
-      Sur: {
-        "Socket": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "red" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "green" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ]
-      },
-      Nizwa: {
-        "Socket": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "red" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "red" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ]
-      }
-    };
-
-    const modal = document.getElementById('modal');
-    const schoolList = document.getElementById('schoolList');
-    const modalTitle = document.getElementById('modalTitle');
-    const closeModalBtn = document.getElementById('closeModal');
-
-    // تحديث الدائرة الرئيسية حسب حالة المدارس (الأولوية: red > orange > green)
-    function updateMainCircle(region, task) {
-      const schools = data[region][task];
-      let status = "green"; // أفضل حالة
-      for (const school of schools) {
-        if (school.status === "red") {
-          status = "red";
-          break;
-        } else if (school.status === "orange") {
-          status = "orange";
-        }
-      }
-      // تحديث الدائرة في الجدول
-      const circle = document.querySelector(`.circle[data-region="${region}"][data-task="${task}"]`);
-      if (circle) {
-        circle.className = "circle " + status;
-      }
-    }
-
-    // فتح المودال وعرض المدارس مع قائمة لتعديل الحالة
-    function openModal(region, task) {
-      modal.style.display = "flex";
-      modalTitle.textContent = `${region} - ${task} Schools`;
-      schoolList.innerHTML = "";
-
-      if (data[region] && data[region][task]) {
-        data[region][task].forEach((school, index) => {
-          const div = document.createElement('div');
-          div.className = "school-item";
-          div.innerHTML = `
-            <span class="circle ${school.status}"></span>
-            <span class="school-name">${school.name}</span>
-            <select class="status-select">
-              <option value="green" ${school.status === "green" ? "selected" : ""}>Green</option>
-              <option value="orange" ${school.status === "orange" ? "selected" : ""}>Orange</option>
-              <option value="red" ${school.status === "red" ? "selected" : ""}>Red</option>
-            </select>
-          `;
-          // عند تغيير الحالة يحدث التحديث
-          div.querySelector('select').addEventListener('change', e => {
-            data[region][task][index].status = e.target.value;
-            div.querySelector('.circle').className = "circle " + e.target.value;
-            updateMainCircle(region, task);
-          });
-          schoolList.appendChild(div);
-        });
-      } else {
-        schoolList.textContent = "No schools data available.";
-      }
-    }
-
-    closeModalBtn.onclick = () => {
-      modal.style.display = "none";
-    };
-
-    window.onclick = e => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-      }
-    };
-
-    // ربط الدوائر بالنقر
-    document.querySelectorAll('.circle').forEach(circle => {
-      circle.addEventListener('click', e => {
-        const region = e.target.getAttribute('data-region');
-        const task = e.target.getAttribute('data-task');
-        openModal(region, task);
-      });
-    });
-  </script>
 
 </body>
 </html>
