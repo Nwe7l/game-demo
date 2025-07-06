@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Oman Dashboard (Live)</title>
+  <title>Oman Region Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
@@ -11,6 +11,9 @@
       margin: 0;
       padding: 20px;
       background: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
     }
     table {
       width: 100%;
@@ -23,6 +26,7 @@
       padding: 15px;
       text-align: center;
       border: 1px solid #ddd;
+      word-wrap: break-word;
     }
     th {
       background: #333;
@@ -50,7 +54,7 @@
     .modal-content {
       background: white;
       padding: 20px;
-      width: 400px;
+      width: 450px;
       border-radius: 10px;
       max-height: 80%;
       overflow-y: auto;
@@ -72,17 +76,20 @@
 </head>
 <body>
 
-<h2>Oman Project Dashboard (Live)</h2>
+<h2>Oman Region Project Dashboard</h2>
+
 <table>
   <thead>
     <tr>
       <th>Region</th>
       <th>Socket</th>
       <th>Paints</th>
+      <th>Software Installation</th>
+      <th>Screen Installation</th>
     </tr>
   </thead>
   <tbody id="dashboardBody">
-    <!-- Rows injected dynamically -->
+    <!-- JS will render this -->
   </tbody>
 </table>
 
@@ -96,7 +103,7 @@
 </div>
 
 <script>
-  // 🔥 Replace with your Firebase config:
+  // Replace this config with yours
   const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -109,4 +116,87 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const tasks = ["Socket", "Paints]()
+  const tasks = ["Socket", "Paints", "Software Installation", "Screen Installation"];
+  const regions = [
+    "Muscat", "Salalah", "Sohar", "Sur", "Nizwa", "Ibri", "Barka", "Buraimi",
+    "Duqm", "Rustaq", "Bahla", "Ibra", "Khasab", "Samail"
+  ];
+
+  const dashboardBody = document.getElementById("dashboardBody");
+
+  function getColor(statuses) {
+    if (statuses.length === 0) return 'red';
+    if (statuses.every(s => s === 'green')) return 'green';
+    if (statuses.some(s => s === 'orange')) return 'orange';
+    return 'red';
+  }
+
+  async function loadDashboard() {
+    dashboardBody.innerHTML = "";
+    for (const region of regions) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${region}</td>`;
+      for (const task of tasks) {
+        const cell = document.createElement('td');
+        cell.dataset.region = region;
+        cell.dataset.task = task;
+
+        const snap = await db.collection('statuses')
+          .doc(region).collection(task).get();
+
+        const statuses = snap.docs.map(doc => doc.data().status);
+        const finalStatus = getColor(statuses);
+        cell.innerHTML = `<span class="circle ${finalStatus}"></span>`;
+        cell.onclick = () => openModal(region, task);
+        row.appendChild(cell);
+      }
+      dashboardBody.appendChild(row);
+    }
+  }
+
+  async function openModal(region, task) {
+    document.getElementById("modal").style.display = "flex";
+    document.getElementById("modalTitle").textContent = `${region} - ${task}`;
+
+    const container = document.getElementById("schoolList");
+    container.innerHTML = "";
+
+    const snap = await db.collection("statuses")
+      .doc(region).collection(task).get();
+
+    snap.forEach(doc => {
+      const school = doc.id;
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.className = "school-item";
+      div.innerHTML = `
+        <span>${school}</span>
+        <select onchange="updateStatus('${region}', '${task}', '${school}', this.value)">
+          <option value="green" ${data.status === 'green' ? 'selected' : ''}>Green</option>
+          <option value="orange" ${data.status === 'orange' ? 'selected' : ''}>Orange</option>
+          <option value="red" ${data.status === 'red' ? 'selected' : ''}>Red</option>
+        </select>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  async function updateStatus(region, task, school, newStatus) {
+    await db.collection("statuses")
+      .doc(region)
+      .collection(task)
+      .doc(school)
+      .set({ status: newStatus });
+
+    loadDashboard(); // refresh the main grid
+  }
+
+  function closeModal() {
+    document.getElementById("modal").style.display = "none";
+  }
+
+  loadDashboard();
+</script>
+
+</body>
+</html>
