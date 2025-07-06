@@ -1,15 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>2D Horror Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oman Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      height: 100vh;
+      background: #f1f3f6;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #1f2937;
+      color: white;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      padding: 10px 0;
+      cursor: pointer;
+    }
+
+    .sidebar li:hover {
+      background-color: #374151;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background-color: white;
+      padding: 20px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .region {
+      background-color: #e5e7eb;
+      padding: 10px 15px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .content {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .status-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .green { background-color: #10b981; }
+    .red { background-color: #ef4444; }
+    .orange { background-color: #f59e0b; }
+
+    .card label {
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="512" height="512"></canvas>
-  <div id="message"></div>
-  <audio id="sfx" src="assets/jump.mp3"></audio>
-  <script src="game.js"></script>
+
+  <div class="sidebar">
+    <h2>Points</h2>
+    <ul>
+      <li>Paints</li>
+      <li>Socket</li>
+      <li>Software Installation</li>
+      <li>Screen Installation</li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="region">Muscat</div>
+      <div class="region">Salalah</div>
+      <div class="region">Sohar</div>
+      <div class="region">Sur</div>
+      <div class="region">Nizwa</div>
+      <div class="region">Ibri</div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="status-circle green"></div>
+        <label>Paints</label>
+      </div>
+      <div class="card">
+        <div class="status-circle red"></div>
+        <label>Socket</label>
+      </div>
+      <div class="card">
+        <div class="status-circle orange"></div>
+        <label>Software Installation</label>
+      </div>
+      <div class="card">
+        <div class="status-circle green"></div>
+        <label>Screen Installation</label>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
