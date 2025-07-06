@@ -21,7 +21,7 @@
       border-collapse: collapse;
       background: #fff;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      table-layout: fixed; /* <-- This ensures equal column widths */
+      table-layout: fixed;
     }
 
     th, td {
@@ -29,13 +29,12 @@
       text-align: center;
       border-bottom: 1px solid #e0e0e0;
       word-wrap: break-word;
+      cursor: pointer;
     }
 
     th {
       background-color: #1f2937;
       color: white;
-      position: sticky;
-      top: 0;
     }
 
     .circle {
@@ -49,94 +48,141 @@
     .red { background-color: #ef4444; }
     .orange { background-color: #f59e0b; }
 
-    tbody tr:hover {
-      background-color: #f0f0f0;
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
     }
 
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      max-height: 80%;
+      overflow-y: auto;
+    }
 
-      th {
-        position: static;
-      }
+    .school-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
 
-      td {
-        text-align: right;
-        padding-left: 50%;
-        position: relative;
-      }
-
-      td::before {
-        position: absolute;
-        left: 15px;
-        width: 45%;
-        white-space: nowrap;
-        font-weight: bold;
-        color: #555;
-      }
-
-      td:nth-child(1)::before { content: "Region"; }
-      td:nth-child(2)::before { content: "Socket"; }
-      td:nth-child(3)::before { content: "Paints"; }
-      td:nth-child(4)::before { content: "Software Install"; }
-      td:nth-child(5)::before { content: "Screen Install"; }
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      color: red;
     }
   </style>
 </head>
 <body>
 
-  <h1>Oman Project Dashboard</h1>
+<h1>Oman Project Dashboard</h1>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Region</th>
-        <th>Socket</th>
-        <th>Paints</th>
-        <th>Software Installation</th>
-        <th>Screen Installation</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Muscat</td>
-        <td><span class="circle green"></span></td>
-        <td><span class="circle green"></span></td>
-        <td><span class="circle red"></span></td>
-        <td><span class="circle orange"></span></td>
-      </tr>
-      <tr>
-        <td>Salalah</td>
-        <td><span class="circle red"></span></td>
-        <td><span class="circle orange"></span></td>
-        <td><span class="circle green"></span></td>
-        <td><span class="circle green"></span></td>
-      </tr>
-      <tr>
-        <td>Sohar</td>
-        <td><span class="circle green"></span></td>
-        <td><span class="circle red"></span></td>
-        <td><span class="circle green"></span></td>
-        <td><span class="circle orange"></span></td>
-      </tr>
-      <tr>
-        <td>Sur</td>
-        <td><span class="circle red"></span></td>
-        <td><span class="circle red"></span></td>
-        <td><span class="circle red"></span></td>
-        <td><span class="circle green"></span></td>
-      </tr>
-      <tr>
-        <td>Nizwa</td>
-        <td><span class="circle orange"></span></td>
-        <td><span class="circle green"></span></td>
-        <td><span class="circle orange"></span></td>
-        <td><span class="circle red"></span></td>
-      </tr>
-    </tbody>
-  </table>
+<table id="dashboard">
+  <thead>
+    <tr>
+      <th>Region</th>
+      <th>Socket</th>
+      <th>Paints</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-region="Muscat">
+      <td>Muscat</td>
+      <td class="cell" data-task="Socket"><span class="circle red"></span></td>
+      <td class="cell" data-task="Paints"><span class="circle green"></span></td>
+    </tr>
+    <tr data-region="Salalah">
+      <td>Salalah</td>
+      <td class="cell" data-task="Socket"><span class="circle orange"></span></td>
+      <td class="cell" data-task="Paints"><span class="circle red"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">✖</span>
+    <h3 id="modalTitle"></h3>
+    <div id="schoolList"></div>
+  </div>
+</div>
+
+<script>
+  // Example school data
+  const regionTaskData = {
+    Muscat: {
+      Socket: [
+        { name: "School A", status: "green" },
+        { name: "School B", status: "green" }
+      ],
+      Paints: [
+        { name: "School A", status: "green" },
+        { name: "School B", status: "green" }
+      ]
+    },
+    Salalah: {
+      Socket: [
+        { name: "School C", status: "orange" },
+        { name: "School D", status: "red" }
+      ],
+      Paints: [
+        { name: "School C", status: "red" },
+        { name: "School D", status: "red" }
+      ]
+    }
+  };
+
+  // Handle cell click
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const row = cell.parentElement;
+      const region = row.getAttribute('data-region');
+      const task = cell.getAttribute('data-task');
+      const schools = regionTaskData[region][task] || [];
+
+      document.getElementById('modalTitle').textContent = `${region} - ${task}`;
+      const list = document.getElementById('schoolList');
+      list.innerHTML = '';
+
+      schools.forEach((school, i) => {
+        const div = document.createElement('div');
+        div.className = 'school-item';
+        div.innerHTML = `
+          <span>${school.name}</span>
+          <span class="circle ${school.status}"></span>
+        `;
+        list.appendChild(div);
+      });
+
+      document.getElementById('modal').style.display = 'flex';
+
+      // Update main cell circle color based on school statuses
+      const statuses = schools.map(s => s.status);
+      let finalStatus = 'red';
+      if (statuses.every(s => s === 'green')) {
+        finalStatus = 'green';
+      } else if (statuses.some(s => s === 'orange')) {
+        finalStatus = 'orange';
+      }
+
+      cell.querySelector('.circle').className = `circle ${finalStatus}`;
+    });
+  });
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+</script>
 
 </body>
 </html>
