@@ -1,103 +1,14 @@
+index.html:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Oman Project Dashboard with Firebase v9 Modular SDK</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      table-layout: fixed;
-    }
-    th, td {
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #e0e0e0;
-      word-wrap: break-word;
-      cursor: default;
-    }
-    th {
-      background-color: #1f2937;
-      color: white;
-      position: sticky;
-      top: 0;
-    }
-    .circle {
-      height: 20px;
-      width: 20px;
-      border-radius: 50%;
-      display: inline-block;
-      cursor: pointer;
-    }
-    .green { background-color: #10b981; }
-    .red { background-color: #ef4444; }
-    .orange { background-color: #f59e0b; }
-    tbody tr:hover {
-      background-color: #f0f0f0;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .modal-content {
-      background: white;
-      width: 450px;
-      max-height: 80vh;
-      overflow-y: auto;
-      border-radius: 8px;
-      padding: 20px;
-      box-sizing: border-box;
-      position: relative;
-    }
-    .modal h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 22px;
-      font-weight: bold;
-      color: #333;
-      cursor: pointer;
-    }
-    .school-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      justify-content: space-between;
-    }
-    .school-name {
-      font-weight: 600;
-    }
-    select.status-select {
-      padding: 4px 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Oman Project Dashboard with Firebase v9 Modular SDK</h1>
+  <h1>Oman Project Dashboard with Firebase</h1>
   <table>
     <thead>
       <tr>
@@ -119,6 +30,137 @@
     </div>
   </div>
 
-  <script type="module" src="./main.js"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
+
+
+---
+
+style.css:
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  table-layout: fixed;
+}
+
+th, td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  word-wrap: break-word;
+  cursor: default;
+}
+
+th {
+  background-color: #1f2937;
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+.circle {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.green { background-color: #10b981; }
+.red { background-color: #ef4444; }
+.orange { background-color: #f59e0b; }
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  width: 450px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+.school-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  justify-content: space-between;
+}
+
+.school-name {
+  font-weight: 600;
+}
+
+select.status-select {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+
+---
+
+main.js:
+
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, onValue, set } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDW3TblyoZWcr5yG9AQeF2DgN3LJg4bOio",
+  authDomain: "data-8fa5e.firebaseapp.com",
+  databaseURL: "https://data-8fa5e-default-rtdb.firebaseio.com",
+  projectId: "data-8fa5e",
+  storageBucket: "data-8fa5e.appspot.com",
+  messagingSenderId: "1083428453231",
+  appId: "1:1083428453231:web:6dbfc0c2c01c63313d069a",
+  measurementId: "G-YH6ZVS8GRD"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// باقي الكود الخاص بعرض المحافظات والمدارس وتحديث الحالة من Firebase
+// تم شرحه مسبقًا ويمكن إعادة إرساله كاملًا حسب الطلب
