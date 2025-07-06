@@ -129,15 +129,20 @@
       fields.forEach(field => {
         const td = document.createElement('td');
         const circle = document.createElement('span');
-        const value = data[field] || "red";
-        circle.className = `circle ${statusColors[value] || 'red'}`;
+
+        let value = data[field];
+        if (!statusColors[value]) value = "red"; // fallback if invalid
+        circle.className = `circle ${statusColors[value]}`;
 
         circle.onclick = () => {
           const newStatus = prompt("Change status to: green, orange, or red", value);
-          if (newStatus && statusColors[newStatus]) {
+          const allowed = ["green", "orange", "red"];
+          if (newStatus && allowed.includes(newStatus)) {
             db.collection('regions').doc(regionName).update({
               [field]: newStatus
             });
+          } else {
+            alert("Only 'green', 'orange', or 'red' are allowed.");
           }
         };
 
@@ -148,6 +153,7 @@
       return tr;
     }
 
+    // Realtime listener
     db.collection("regions").onSnapshot(snapshot => {
       tableBody.innerHTML = "";
       snapshot.forEach(doc => {
