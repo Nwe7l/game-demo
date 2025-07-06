@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Oman Project Dashboard</title>
+  <title>Oman Project Dashboard with Firebase v9 Modular SDK</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -47,7 +47,6 @@
     tbody tr:hover {
       background-color: #f0f0f0;
     }
-    /* Modal styles */
     .modal {
       display: none;
       position: fixed;
@@ -98,9 +97,7 @@
   </style>
 </head>
 <body>
-
-  <h1>Oman Project Dashboard</h1>
-
+  <h1>Oman Project Dashboard with Firebase v9 Modular SDK</h1>
   <table>
     <thead>
       <tr>
@@ -111,12 +108,9 @@
         <th>Screen Installation</th>
       </tr>
     </thead>
-    <tbody id="dashboardBody">
-      <!-- سيتم تعبئة الصفوف بواسطة جافاسكريبت -->
-    </tbody>
+    <tbody id="dashboardBody"></tbody>
   </table>
 
-  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <span class="close-btn" id="closeModal">&times;</span>
@@ -125,240 +119,6 @@
     </div>
   </div>
 
-  <script>
-    // البيانات الافتراضية (لو ما موجودة في localStorage)
-    const defaultData = {
-      Muscat: {
-        "Socket": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "red" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "green" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "green" }
-        ]
-      },
-      Salalah: {
-        "Socket": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "green" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "red" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "green" }
-        ]
-      },
-      Sohar: {
-        "Socket": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "red" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "green" }
-        ]
-      },
-      Sur: {
-        "Socket": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "red" },
-          { name: "School 3", status: "red" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "green" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ]
-      },
-      Nizwa: {
-        "Socket": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "red" }
-        ],
-        "Paints": [
-          { name: "School 1", status: "green" },
-          { name: "School 2", status: "orange" },
-          { name: "School 3", status: "red" }
-        ],
-        "Software Installation": [
-          { name: "School 1", status: "orange" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ],
-        "Screen Installation": [
-          { name: "School 1", status: "red" },
-          { name: "School 2", status: "green" },
-          { name: "School 3", status: "orange" }
-        ]
-      }
-    };
-
-    // محاولة استرجاع البيانات من localStorage
-    let data = JSON.parse(localStorage.getItem('omanDashboardData')) || defaultData;
-
-    const modal = document.getElementById('modal');
-    const schoolList = document.getElementById('schoolList');
-    const modalTitle = document.getElementById('modalTitle');
-    const closeModalBtn = document.getElementById('closeModal');
-    const dashboardBody = document.getElementById('dashboardBody');
-
-    // تحديث الدائرة الرئيسية حسب حالة المدارس (الأولوية: red > orange > green)
-    function getOverallStatus(schools) {
-      let status = "green";
-      for (const school of schools) {
-        if (school.status === "red") {
-          return "red";
-        } else if (school.status === "orange") {
-          status = "orange";
-        }
-      }
-      return status;
-    }
-
-    function updateMainCircle(region, task) {
-      const schools = data[region][task];
-      const status = getOverallStatus(schools);
-      const circle = document.querySelector(`.circle[data-region="${region}"][data-task="${task}"]`);
-      if (circle) {
-        circle.className = "circle " + status;
-      }
-    }
-
-    // بناء الجدول حسب البيانات الحالية
-    function buildTable() {
-      dashboardBody.innerHTML = "";
-      for (const region in data) {
-        const row = document.createElement('tr');
-
-        // اسم المحافظة
-        const tdRegion = document.createElement('td');
-        tdRegion.textContent = region;
-        row.appendChild(tdRegion);
-
-        // المهام
-        const tasks = ["Socket", "Paints", "Software Installation", "Screen Installation"];
-        for (const task of tasks) {
-          const td = document.createElement('td');
-          const status = getOverallStatus(data[region][task] || []);
-          const span = document.createElement('span');
-          span.className = `circle ${status}`;
-          span.setAttribute('data-region', region);
-          span.setAttribute('data-task', task);
-          td.appendChild(span);
-          row.appendChild(td);
-        }
-
-        dashboardBody.appendChild(row);
-      }
-
-      // ربط حدث النقر على الدوائر
-      document.querySelectorAll('.circle').forEach(circle => {
-        circle.addEventListener('click', e => {
-          const region = e.target.getAttribute('data-region');
-          const task = e.target.getAttribute('data-task');
-          openModal(region, task);
-        });
-      });
-    }
-
-    // فتح المودال مع إمكانية تعديل الحالة
-    function openModal(region, task) {
-      modal.style.display = "flex";
-      modalTitle.textContent = `${region} - ${task} Schools`;
-      schoolList.innerHTML = "";
-
-      if (data[region] && data[region][task]) {
-        data[region][task].forEach((school, index) => {
-          const div = document.createElement('div');
-          div.className = "school-item";
-          div.innerHTML = `
-            <span class="circle ${school.status}"></span>
-            <span class="school-name">${school.name}</span>
-            <select class="status-select">
-              <option value="green" ${school.status === "green" ? "selected" : ""}>Green</option>
-              <option value="orange" ${school.status === "orange" ? "selected" : ""}>Orange</option>
-              <option value="red" ${school.status === "red" ? "selected" : ""}>Red</option>
-            </select>
-          `;
-          div.querySelector('select').addEventListener('change', e => {
-            const newStatus = e.target.value;
-            data[region][task][index].status = newStatus;
-            div.querySelector('.circle').className = "circle " + newStatus;
-            updateMainCircle(region, task);
-            saveData();
-          });
-          schoolList.appendChild(div);
-        });
-      } else {
-        schoolList.textContent = "No schools data available.";
-      }
-    }
-
-    // حفظ البيانات في localStorage
-    function saveData() {
-      localStorage.setItem('omanDashboardData', JSON.stringify(data));
-    }
-
-    closeModalBtn.onclick = () => {
-      modal.style.display = "none";
-    };
-
-    window.onclick = e => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-      }
-    };
-
-    // بناء الجدول عند تحميل الصفحة
-    buildTable();
-  </script>
-
+  <script type="module" src="./main.js"></script>
 </body>
 </html>
